@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # ===== libraries =====
 import logging_setup
 log = logging_setup.getLogger(__name__)
@@ -14,9 +14,10 @@ try:
 except:
     # Python 3
     import tkinter as tk
-    tkFileDialog = tk.filedialog
-    tkMessageBox = tk.messagebox
-    tkFont = tk.font
+    from tkinter import filedialog, messagebox, font
+    tkFileDialog = filedialog
+    tkMessageBox = messagebox
+    tkFont = font
     from tkinter import ttk
 import os, sys
 try:
