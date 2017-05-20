@@ -1,0 +1,17 @@
+[DONE] logging.json:
+	"mode": "wt"
+	causes error on Windows invalid mode "wtb"
+
+[DONE] png can not be read on Windows and Mac. Probably that is what I am using PIL for, but I hate to depend on a non-standard library.
+	=> use bitmap instead
+
+ttk does not exist on Mac
+	=> try to replace it with normal Tkinter
+
+[DONE] on windows log directory is inside settings directory
+	in WindowResetSettings:
+		=> disable/hide checkbox "entire directory" if subdirectories exist
+		=> filter. show files only.
+	check this on Mac.
+
+[DONE] old python versions do not allow empty wildcards in format

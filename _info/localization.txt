@@ -1,0 +1,10 @@
+xgettext myprogram.py
+	extracts to be translated messages from myprogram.py to messages.po
+
+msgfmt messages.po
+	converts readable messages.po to binary messages.mo
+	
+mo-file needs to be moved to locales/<language>/LC_MESSAGES/<domain>.mo
+	<language>: two letters like "en" or "de"
+
+	it does not hurt to move .po file there, too

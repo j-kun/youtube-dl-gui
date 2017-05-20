@@ -1,0 +1,8 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Encoding=UTF-8
+Name=YouTube Downloader GUI
+Comment=a simple graphical user interface to youtube-dl
+Exec=python /home/user/data/software/computer/downloader/youtube-dl-gui/gui.py
+Icon=/home/user/data/software/computer/downloader/youtube-dl-gui/_icon/icon.png
+Type=Application

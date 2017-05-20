@@ -1,0 +1,23 @@
+*.log
+/_info/example-json-files/*
+/symbols/_trash/*
+test-data.txt
+
+# ------ Libraries ------
+# ignore non-standard libraries which I have downloaded 
+# and which I am not allowed to upload to github for legal reasons
+tk_tooltip.py
+
+# ------ Python ------
+*.pyc
+
+# ------ Linux ------
+# ignore tmp files
+*~
+.fuse_hidden*
+
+# ------ Windows ------
+# ignore thumbnails created by windows
+Thumbs.db
+# ignore windows shortcuts
+*.lnk

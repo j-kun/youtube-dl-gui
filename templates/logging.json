@@ -1,0 +1,35 @@
+{
+    "version": 1,
+    "disable_existing_loggers": false,
+    
+    "formatters": {
+        "short": {
+            "format": "%(name)s: %(message)s'"
+        },
+        "detailed": {
+            "format": "[%(levelname)-8s] %(asctime)s %(name)s: %(message)s"
+        }
+    },
+
+    "handlers": {
+        "stderr": {
+            "class": "logging.StreamHandler",
+            "level": "ERROR",
+            "formatter": "short",
+            "stream": "ext://sys.stderr"
+        },
+        "log-file": {
+            "class": "logging.FileHandler",
+            "level": "DEBUG",
+            "formatter": "detailed",
+            "filename": "youtube-dl-gui.log",
+            "mode": "w",
+            "encoding": "utf8"
+        }
+    },
+
+    "root": {
+        "level": "DEBUG",
+        "handlers": ["log-file", "stderr"]
+    }
+}

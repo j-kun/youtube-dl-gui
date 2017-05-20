@@ -1,0 +1,27 @@
+required programs:
+	python
+	youtube-dl
+	libav
+
+recommended non-standard python libraries:
+	appdirs (pip install appdirs --user)
+		[for OS specific location of log and config files]
+	tk_tooltip (download from http://tkinter.unpythonic.net/wiki/ToolTip)
+		[to display tooltips]
+
+youtube-dl is available via apt-get but I would not recommend installing *youtube-dl* via apt-get because here it's crucial to have the newest version.
+Instead follow the instructions on
+http://rg3.github.io/youtube-dl/download.html
+
+
+
+move the folder youtube-dl-gui to whereever you want to have it and do the following.
+(in the following examples I am it's located in /opt).
+
+create an alias to call from the command line:
+add the following line to ~/.bashrc:
+alias youtube-dl-gui="python /opt/youtube-dl-gui/gui.py"
+
+add it to Gnome menus:
+create a link to the desktop-file:
+$ ln -s /opt/youtube-dl-gui/youtube-dl-gui.desktop ~/.local/share/applications/

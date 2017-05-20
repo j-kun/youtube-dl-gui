@@ -1,0 +1,39 @@
+required programs:
+	python
+	youtube-dl
+	libav
+
+required non-standard python libraries:
+	appdirs (pip install appdirs --user) (optional)
+	tk_tooltip (download from http://tkinter.unpythonic.net/wiki/ToolTip) (optional)
+	(If you want to display png symbols on Windows with Python 2 you need PIL: from PIL import ImageTk. To install PIL run: pip install Pillow. On Linux Tkinter supports png out of the box.)
+
+
+Systemvariablen:
+	Systemsteuerung > System und Sicherheit > System > Erweiterte Systemeinstellungen > Erweitert > Umgebungsvariablen...
+	WARNUNG: Systemvariablen werden in alphabetischer Reihenfolge ausgewertet => PYTHON_HOME kann zB nicht in PATH verwendet werden
+
+install python (incl pip):
+	1) download + install
+		pip needs access to python installation (with normal user rights). maybe this can be achieved by installing python in C: instead of in C:\Program Files. If not: right click > Eigenschaften > Sicherheit: select Benutzer in upper list and check Vollzugriff in lower list.
+	2) systemvariables:
+		HOME_PYTHON = %BIN%\Python 2.7.10
+		PATH += ;%HOME_PYTHON%					:: python & pythonw
+		PATH += ;%HOME_PYTHON%\Scripts		:: pip & easy_install
+		WARNING: you can not call it PYTHON_HOME because Windows expands variables in lexicographical order => PYTHON_HOME is not yet defined when PATH is expanded.
+
+
+You can download youtub-dl from
+http://youtube-dl.org/
+
+Please keep in mind, that some of youtube-dl's features
+depend on the libav project. If it is not already installed
+you can download it for windows from:
+http://builds.libav.org/windows/
+(i.e. release-gpl/libav-11.3-win64.7z)
+unzip it (i.e. with 7zip, http://www.7-zip.org/)
+move it whereever you want (i.e. C:\Program Files)
+and add libav\usr\bin to PATH variable
+
+
+start the program with youtube-dl-gui.bat
