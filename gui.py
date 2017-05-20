@@ -17,7 +17,7 @@ except:
     tkFileDialog = tk.filedialog
     tkMessageBox = tk.messagebox
     tkFont = tk.font
-    ttk = tk
+    from tkinter import ttk
 import os, sys
 try:
     from gi.repository import GLib

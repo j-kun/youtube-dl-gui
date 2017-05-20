@@ -9,8 +9,9 @@ try:
 except:
     # Python 3
     import tkinter as tk
-    tkText = tk.scrolledtext
-    ttk = tk
+    from tkinter import scrolledtext
+    tkText = scrolledtext
+    from tkinter import ttk
 import os.path
 import logging
 log = logging.getLogger(__name__)
@@ -252,7 +253,7 @@ class Menubutton(ttk.Menubutton):
         self.menu.delete(0, tk.END)
         if self.values!=None and len(self.values)>0:
             self.set_value_id(current_value_id)
-            for i in xrange(len(values)):
+            for i in range(len(values)):
                 v = self.values[i]
                 self.menu.add_command(label=v, command=lambda i=i: self.set_value_id(i))
         else:
@@ -535,7 +536,7 @@ class LabelSelectableWithLabel(LabelSelectable):
         # based on /usr/lib/python2.7/lib-tk/ScrolledText.py
         # Copy geometry methods of self.frame without overriding Entry methods -- hack!
         text_meths = vars(tk.Entry).keys()
-        methods = vars(tk.Pack).keys() + vars(tk.Grid).keys() + vars(tk.Place).keys()
+        methods = tuple(vars(tk.Pack).keys()) + tuple(vars(tk.Grid).keys()) + tuple(vars(tk.Place).keys())
         methods = set(methods).difference(text_meths)
         for m in methods:
             if m[0] != '_' and m != 'config' and m != 'configure':
@@ -562,7 +563,7 @@ class AutoScrolledText(ScrolledText):
         # Copy geometry methods of self.frame without overriding Text
         # methods -- hack!
         text_meths = vars(tkText.Text).keys()
-        methods = vars(tkText.Pack).keys() + vars(tkText.Grid).keys() + vars(tkText.Place).keys()
+        methods = tuple(vars(tkText.Pack).keys()) + tuple(vars(tkText.Grid).keys()) + tuple(vars(tkText.Place).keys())
         methods = set(methods).difference(text_meths)
 
         for m in methods:
@@ -790,7 +791,7 @@ static unsigned char circle_mask_bits[] = {
         self.checkbutton.bind('<Leave>', lambda event: self.checkbutton.config(bg=self._normalcolor))
 
         # pack, grid, place (based on /usr/lib/python2.7/lib-tk/ScrolledText.py)
-        geometry_manager_methods = set(vars(tk.Pack).keys() + vars(tk.Grid).keys() + vars(tk.Place).keys())#.difference(vars(tk.Frame)) ## vars(tk.Frame) are all private anyway
+        geometry_manager_methods = set(tuple(vars(tk.Pack).keys()) + tuple(vars(tk.Grid).keys()) + tuple(vars(tk.Place).keys()))#.difference(vars(tk.Frame)) ## vars(tk.Frame) are all private anyway
         for m in geometry_manager_methods:
             if m[0] != '_' and m != 'config' and m != 'configure':
                 setattr(self, m, getattr(self.parentframe, m))

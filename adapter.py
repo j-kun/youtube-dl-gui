@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # standard libraries
 import threading
-import Queue as queue
+try:
+    import Queue as queue
+except ImportError:
+    import queue
 import subprocess, os
 import webbrowser
 import datetime
@@ -34,7 +37,7 @@ class ProgramFinder(object):
             elif is_os.mac():
                 cmd = self._on_mac()
             else:
-                raise ValueError, "unknown operating system: "+is_os.os_name
+                raise ValueError("unknown operating system: "+is_os.os_name)
             settings.setdefault(KEY.CMD, cmd)
         self.cmd = cmd
     
@@ -206,7 +209,7 @@ class Adapter(object):
         elif mode==cns.MODE_PLAYLIST:
             cmd = self._process_params_playlist(params)
         else:
-            raise ValueError, "Invalid mode: %r" % (mode,)
+            raise ValueError("Invalid mode: %r" % (mode,))
 
         wd = params.pop(cns.WORKING_DIRECTORY)
         if wd != None:
@@ -255,7 +258,7 @@ class Adapter(object):
         cmd.append(cns.MARK_WATCHED if params.pop(cns.MARK_WATCHED) else cns._NO_MARK_WATCHED)
         source = params.pop(cns.SOURCE_URL)
         if len(source)==0:
-            raise ValueError, "no source url given"
+            raise ValueError("no source url given")
         cmd.append(source)
         return cmd
 

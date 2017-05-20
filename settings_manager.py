@@ -41,7 +41,7 @@ def load_settings(settings=settings, filename=None):
             settings.update(saved_settings)
             settings[KEY._IS_SETTINGS_FILE_EXISTING] = True
             settings[KEY._IS_SETTINGS_FILE_LOADED_SUCCESSFULLY] = True
-        except Exception, e:
+        except Exception as e:
             settings[KEY._IS_SETTINGS_FILE_EXISTING] = True
             settings[KEY._IS_SETTINGS_FILE_LOADED_SUCCESSFULLY] = False
             settings[KEY._ERROR_FAILED_TO_LOAD] = e
