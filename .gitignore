@@ -1,4 +1,5 @@
 *.log
+/config
 /_info/example-json-files/*
 /symbols/_trash/*
 test-data.txt

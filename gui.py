@@ -56,12 +56,19 @@ and add libav\usr\bin to PATH variable
 """
 
 # ===== ideas for improvement =====
+#TODO: focus
+#TODO: logging_setup.py: atexit is not executed.
+#TODO: if atexit was executed log would be written after deletion.
+#TODO: no permission to remove log on Windows (cause it's open?)
+#TODO: tkx.SelectableLabel too small for kana
+
 #TODO? filename (not really necessary, just click open and hit F2)
 #TODO: direct support for playlists
 #TODO: download available subtitle information and set menu accordingly
 #TODO: tooltips for shortcuts
 #TODO: padding based on https://developer.gnome.org/hig/stable/visual-layout.html.en
 #TODO: option to save description
+#TODO: Ctrl+f in help
 
 
 # ===== constants =====
