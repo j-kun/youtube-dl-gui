@@ -34,13 +34,21 @@ import metainfo
 
 
 # constants
-_END_OF_LOG = " end of log ".center(30, '=')
-
 LEVEL_MAX = logging.CRITICAL*10
 LEVEL_SENTINEL = logging.WARNING-1 # shall not be printed on stderr
 logging.addLevelName(LEVEL_SENTINEL, 'SENTINEL')
 
 FN_LOGGING_JSON = "logging.json"
+
+
+# a function which I am missing in the logging library
+def get_level_number(level):
+    if isinstance(level, int):
+        return level
+    try:
+        return int(level)
+    except ValueError:
+        return logging.getLevelName(level)
 
 
 # "fake" logger because I can not log as long as the real logger is not setup
@@ -77,12 +85,13 @@ class UniqueFilenameCreator(object):
             with open(ffn, 'rt') as f:
                 for ln in f:
                     pass
-                if _END_OF_LOG not in ln:
+                if logfile.END_LINE not in ln:
                     # log file is (most likely) in use by other currently running instance
                     return False
         return True
 
 
+# read logging configuration file
 def read_logging_configuration_file():
     ffn_log_configuration = metainfo.get_config_ffn(FN_LOGGING_JSON, log=_log)
     _log.log(logging.INFO, "log configuration file location: {ffn}".format(ffn=ffn_log_configuration))
@@ -110,16 +119,10 @@ def read_logging_configuration_file():
         logfile.init(_log_settings)
 
 
-def get_level_number(level):
-    if isinstance(level, int):
-        return level
-    try:
-        return int(level)
-    except ValueError:
-        return logging.getLevelName(level)
-
-
+# enable/disable log file in log settings (does not take effect until restart)
 class LogFile(object):
+
+    END_LINE = " end of log ".center(30, '=')
 
     @staticmethod
     def iter_file_handlers(_log_settings):
@@ -192,23 +195,22 @@ class LogFile(object):
         assert self._is_enabled == bool(value)
 
 
+    def append_end_line(self):
+        if os.path.isfile(self.get_name()):
+            _log.log(LEVEL_SENTINEL, self.END_LINE)
+
+
+    def remove():
+        os.remove(self.get_name())
+        log_directory = self.get_directory()
+        if len(os.listdir(log_directory))==0:
+            print("rmdir  {0!r}".format(log_directory))
+            os.rmdir(log_directory)
+
+
+# execute
 _log = DelayedLogger()
 logfile = LogFile()
 read_logging_configuration_file()
 _log = _log.write(logging.getLogger(__name__))
-
-
-# end log file at end of program
-@atexit.register # gui.WindowMain.close is not called for example when program is closed via Keyboard Interrupt
-def append_end_of_log_line():
-    if os.path.isfile(logfile.get_name()):
-        _log.log(LEVEL_SENTINEL, _END_OF_LOG)
-
-
-# a function to remove the log file which the controller can call if it wants to
-def remove():
-    os.remove(logfile.get_name())
-    log_directory = logfile.get_directory()
-    if len(os.listdir(log_directory))==0:
-        print("rmdir  {0!r}".format(log_directory))
-        os.rmdir(log_directory)
+atexit.register(logfile.append_end_line) # gui.WindowMain.close is not called for example when program is closed via Keyboard Interrupt

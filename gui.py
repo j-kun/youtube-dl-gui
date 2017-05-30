@@ -226,7 +226,7 @@ class WindowMain(tk.Tk):
             m.add_named_checkbutton("enable_log_file", label=_("write log file"), command=logging_setup.logfile.set_enable, value=logging_setup.logfile.is_enabled())
             m.add_named_checkbutton("auto_remove_log", label=_("auto remove log"), command=lambda value: settings.__setitem__(KEY.AUTO_REMOVE_LOG_AT_CLOSE,value))
             m.add_named_command("open_log_settings", label=_("open log file settings"), command=lambda: open_directory.open_file(metainfo.get_config_ffn(logging_setup.FN_LOGGING_JSON, create=True)))
-            m.add_named_command("open_log", label=_("open log file"), command=lambda: open_directory.open_file(logging_setup.ffn_log_file))
+            m.add_named_command("open_log", label=_("open log file"), command=lambda: open_directory.open_file(logging_setup.logfile.get_name()))
             m.add_named_command("save_log_as", label=_("save log as ..."), command=root.save_log_as)
         
 
@@ -1088,7 +1088,7 @@ class WindowMain(tk.Tk):
             log.debug("save log as was canceled by user.")
             return
         log.debug("save log as {fn}".format(fn=ffn_dest))
-        ffn_source = logging_setup.ffn_log_file
+        ffn_source = logging_setup.logfile.get_name()
         with open(ffn_source, 'rt') as f_source:
             with open(ffn_dest, 'wt') as f_dest:
                 for ln in f_source:
@@ -1210,9 +1210,9 @@ class WindowMain(tk.Tk):
             self.kill()
         
         self.save_settings()
-        logging_setup.append_end_of_log_line() # atexit is not called if executed from IDLE
+        logging_setup.logfile.append_end_line() # atexit is not called if executed from IDLE
         if settings[KEY.AUTO_REMOVE_LOG_AT_CLOSE]:
-            logging_setup.remove()
+            logging_setup.logfile.remove()
         self.destroy()
         self.quit()
         
