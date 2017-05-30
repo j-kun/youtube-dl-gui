@@ -57,8 +57,6 @@ and add libav\usr\bin to PATH variable
 
 # ===== ideas for improvement =====
 #TODO: focus
-#TODO: logging_setup.py: atexit is not executed.
-#TODO: if atexit was executed log would be written after deletion.
 #TODO: no permission to remove log on Windows (cause it's open?)
 #TODO: tkx.SelectableLabel too small for kana
 
@@ -1211,6 +1209,7 @@ class WindowMain(tk.Tk):
             self.kill()
         
         self.save_settings()
+        logging_setup.append_end_of_log_line() # atexit is not called if executed from IDLE
         if settings[KEY.AUTO_REMOVE_LOG_AT_CLOSE]:
             logging_setup.remove()
         self.destroy()

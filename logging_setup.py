@@ -80,7 +80,7 @@ class UniqueFilenameCreator(object):
     @staticmethod
     def is_filename_usable(ffn):
         if os.path.isfile(ffn):
-            with open(ffn_log_file, 'rt') as f:
+            with open(ffn, 'rt') as f:
                 for ln in f:
                     pass
                 if _END_OF_LOG not in ln:
@@ -122,9 +122,10 @@ del _log
 
 
 # end log file at end of program
-@atexit.register
+@atexit.register # gui.WindowMain.close is not called for example when program is closed via Keyboard Interrupt
 def append_end_of_log_line():
-    _real_log.log(LEVEL_SENTINEL, _END_OF_LOG)
+    if os.path.isfile(ffn_log_file):
+        _real_log.log(LEVEL_SENTINEL, _END_OF_LOG)
 
 
 # a function to remove the log file which the controller can call if it wants to
