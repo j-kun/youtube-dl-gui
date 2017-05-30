@@ -162,7 +162,7 @@ class Adapter(object):
         )
         
         def read_stream(queue, flag, stream):
-            for ln in iter(stream.readline, b''):
+            for ln in iter(lambda: self._read_line(stream), b''):
                 queue.put((ln, flag))
         self._thread_stdout = threading.Thread(target=read_stream, args=[self._queue, self.STDOUT, self._proc.stdout])
         self._thread_stdout.daemon = True
@@ -171,6 +171,22 @@ class Adapter(object):
         
         self._thread_stderr.start()
         self._thread_stdout.start()
+
+    @staticmethod
+    def _read_line(stream):
+        #TODO: relies on assumption that linesep is one character only
+        #but I can't check whether there is another character to be interpreted
+        #relies on assumption that '\r' is sent after update. is that true?
+        seps = ("\n", "\r")
+        line = ""
+        while line[-1:] not in seps:
+            c = stream.read(1)
+            if len(c)==0:
+                return ""
+            #sys.stdout.write(c)
+            #sys.stdout.flush()
+            line += c
+        return line
 
     def kill(self):
         self._proc.kill()

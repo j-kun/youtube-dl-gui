@@ -3,6 +3,7 @@
 /_info/example-json-files/*
 /symbols/_trash/*
 test-data.txt
+link.desktop
 
 # ------ Libraries ------
 # ignore non-standard libraries which I have downloaded 
