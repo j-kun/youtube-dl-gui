@@ -40,6 +40,8 @@ LEVEL_MAX = logging.CRITICAL*10
 LEVEL_SENTINEL = logging.WARNING-1 # shall not be printed on stderr
 logging.addLevelName(LEVEL_SENTINEL, 'SENTINEL')
 
+FN_LOGGING_JSON = "logging.json"
+
 
 # "fake" logger because I can not log as long as the real logger is not setup
 class DelayedLogger(object):
@@ -47,19 +49,10 @@ class DelayedLogger(object):
         self.entries = list()
     def log(self, level, msg):
         self.entries.append((level, msg))
-    def append(self, item):
-        # for backward compatibility
-        self.entries.append(item)
     def write(self, log):
         for level, msg in self.entries:
             log.log(level, msg)
-_log = DelayedLogger()
-
-
-# create logging configuration file if not existing
-FN_LOGGING_JSON = "logging.json"
-ffn_log_configuration = metainfo.get_config_ffn(FN_LOGGING_JSON, log=_log)
-_log.append((logging.INFO, "log configuration file location: {ffn}".format(ffn=ffn_log_configuration)))
+        return log
 
 
 # check whether log file is already in use
@@ -90,40 +83,33 @@ class UniqueFilenameCreator(object):
         return True
 
 
-# read logging configuration file
-with open(ffn_log_configuration, 'rt') as f:
-    print(f.name)
-    _log_settings = json.load(f)
-    # specify directory for log file if not given
-    _fn_log_file = _log_settings['handlers']['log-file']['filename']
-    if os.path.isabs(_fn_log_file):
-        ffn_log_file = _fn_log_file
-        _log_directory = os.path.split(ffn_log_file)[0]
-    else:
-        _log_directory = metainfo.PATH_LOG
-        ffn_log_file = os.path.join(_log_directory, _fn_log_file)
-    # create directory for log file if not existing
-    if not os.path.isfile(ffn_log_file):
-        if not os.path.isdir(_log_directory):
-            os.makedirs(_log_directory)
-            _log.append((logging.INFO, "created directory for log file: {}".format(_log_directory)))
-    # make sure to not use the log file of another currently running instance
-    ffn_log_file = UniqueFilenameCreator(ffn_log_file).create()
-    _log_settings['handlers']['log-file']['filename'] = ffn_log_file
-    _log.append((logging.DEBUG, "log file location: {}".format(ffn_log_file)))
-    # configure logging module
-    logging.config.dictConfig(_log_settings)
-del f
-del ffn_log_configuration
+def read_logging_configuration_file():
+    ffn_log_configuration = metainfo.get_config_ffn(FN_LOGGING_JSON, log=_log)
+    _log.log(logging.INFO, "log configuration file location: {ffn}".format(ffn=ffn_log_configuration))
+    with open(ffn_log_configuration, 'rt') as f:
+        _log_settings = json.load(f)
+        # specify directory for log file if not given
+        _fn_log_file = _log_settings['handlers']['log-file']['filename']
+        if os.path.isabs(_fn_log_file):
+            ffn_log_file = _fn_log_file
+            _log_directory = os.path.split(ffn_log_file)[0]
+        else:
+            _log_directory = metainfo.PATH_LOG
+            ffn_log_file = os.path.join(_log_directory, _fn_log_file)
+        # create directory for log file if not existing
+        if not os.path.isfile(ffn_log_file):
+            if not os.path.isdir(_log_directory):
+                os.makedirs(_log_directory)
+                _log.log(logging.INFO, "created directory for log file: {}".format(_log_directory))
+        # make sure to not use the log file of another currently running instance
+        ffn_log_file = UniqueFilenameCreator(ffn_log_file).create()
+        _log_settings['handlers']['log-file']['filename'] = ffn_log_file
+        _log.log(logging.DEBUG, "log file location: {}".format(ffn_log_file))
+        # configure logging module
+        logging.config.dictConfig(_log_settings)
+        logfile.init(_log_settings)
 
 
-# write to log file
-_real_log = logging.getLogger(__name__)
-_log.write(_real_log)
-del _log
-
-
-# enable/disable log file in log settings (does not take effect until restart)
 def get_level_number(level):
     if isinstance(level, int):
         return level
@@ -131,80 +117,98 @@ def get_level_number(level):
         return int(level)
     except ValueError:
         return logging.getLevelName(level)
+
+
+class LogFile(object):
+
+    @staticmethod
+    def iter_file_handlers(_log_settings):
+        handlers = _log_settings['handlers']
+        for handler in handlers:
+            handler = handlers[handler]
+            if 'filename' in handler:
+                yield handler
+
+    def init(self, _log_settings):
+        self._ffn = _log_settings['handlers']['log-file']['filename']
+        
+        for handler in self.iter_file_handlers(_log_settings):
+            if get_level_number(handler['level']) <= LEVEL_MAX:
+                self._is_enabled = True
+                return
+        self._is_enabled = False
+        return
+
+    def get_name(self):
+        return self._ffn
+
+    def get_directory(self):
+        return os.path.split(self.get_name())[0]
+
+    def is_enabled(self):
+        return self._is_enabled
     
-
-def iter_file_handlers(_log_settings):
-    handlers = _log_settings['handlers']
-    for handler in handlers:
-        handler = handlers[handler]
-        if 'filename' in handler:
-            yield handler
-
-def _is_logfile_enabled(_log_settings):
-    for handler in iter_file_handlers(_log_settings):
-        if get_level_number(handler['level']) <= LEVEL_MAX:
+    def disable(self):
+        if not self._is_enabled:
             return True
-    return False
-    
-is_logfile_enabled = _is_logfile_enabled(_log_settings)
-print("is_logfile_enabled: "+str(is_logfile_enabled))
-
-def disable_logfile():
-    global is_logfile_enabled
-    if not is_logfile_enabled:
+        ffn_log_configuration = metainfo.get_config_ffn(FN_LOGGING_JSON, log=_log, create=True)
+        with open(ffn_log_configuration, 'rt') as f:
+            _log_settings = json.load(f)
+        for handler in self.iter_file_handlers(_log_settings):
+            handler['filename'] = "/dev/null"
+            handler['level']    = LEVEL_MAX+1
+        with open(ffn_log_configuration, 'wt') as f:
+            _log.log(logging.INFO, "writing log configuration file (disable logfile): {ffn}".format(ffn=ffn_log_configuration))
+            f.write(json.dumps(_log_settings, indent=4, sort_keys=True))
+        self._is_enabled = False
         return True
-    ffn_log_configuration = metainfo.get_config_ffn(FN_LOGGING_JSON, log=_real_log, create=True)
-    with open(ffn_log_configuration, 'rt') as f:
-        _log_settings = json.load(f)
-    for handler in iter_file_handlers(_log_settings):
-        handler['filename'] = "/dev/null"
-        handler['level']    = LEVEL_MAX+1
-    with open(ffn_log_configuration, 'wt') as f:
-        _real_log.info("writing log configuration file (disable logfile): {ffn}".format(ffn=ffn_log_configuration))
-        f.write(json.dumps(_log_settings, indent=4, sort_keys=True))
-    is_logfile_enabled = False
-    return True
 
-def enable_logfile():
-    global is_logfile_enabled
-    if is_logfile_enabled:
-        return True
-    ffn_log_configuration = metainfo.get_config_ffn(FN_LOGGING_JSON, log=_real_log, create=True)
-    with open(ffn_log_configuration, 'rt') as f:
-        _log_settings = json.load(f)
-    try:
-        handler = _log_settings['handlers']['log-file']
-    except KeyError:
+    def enable(self):
+        if self._is_enabled:
+            return True
+        ffn_log_configuration = metainfo.get_config_ffn(FN_LOGGING_JSON, log=_log, create=True)
+        with open(ffn_log_configuration, 'rt') as f:
+            _log_settings = json.load(f)
         try:
-            handler = next(iter_file_handlers(_log_settings))
-        except StopIteration:
-            return False
-    handler['filename'] = os.path.join(metainfo.PATH_LOG, 'youtube-dl-gui.log')
-    handler['level']    = logging.DEBUG
-    with open(ffn_log_configuration, 'wt') as f:
-        _real_log.info("writing log configuration file (enable logfile): {ffn}".format(ffn=ffn_log_configuration))
-        f.write(json.dumps(_log_settings, indent=4, sort_keys=True))
-    is_logfile_enabled = True
-    return True
+            handler = _log_settings['handlers']['log-file']
+        except KeyError:
+            try:
+                handler = next(self.iter_file_handlers(_log_settings))
+            except StopIteration:
+                return False
+        handler['filename'] = os.path.join(metainfo.PATH_LOG, 'youtube-dl-gui.log')
+        handler['level']    = logging.DEBUG
+        with open(ffn_log_configuration, 'wt') as f:
+            _log.log(logging.INFO, "writing log configuration file (enable logfile): {ffn}".format(ffn=ffn_log_configuration))
+            f.write(json.dumps(_log_settings, indent=4, sort_keys=True))
+        self._is_enabled = True
+        return True
 
-def set_enable_logfile(value):
-    if value:
-        enable_logfile()
-    else:
-        disable_logfile()
-    assert is_logfile_enabled == bool(value)
+    def set_enable(self, value):
+        if value:
+            self.enable()
+        else:
+            self.disable()
+        assert self._is_enabled == bool(value)
+
+
+_log = DelayedLogger()
+logfile = LogFile()
+read_logging_configuration_file()
+_log = _log.write(logging.getLogger(__name__))
 
 
 # end log file at end of program
 @atexit.register # gui.WindowMain.close is not called for example when program is closed via Keyboard Interrupt
 def append_end_of_log_line():
-    if os.path.isfile(ffn_log_file):
-        _real_log.log(LEVEL_SENTINEL, _END_OF_LOG)
+    if os.path.isfile(logfile.get_name()):
+        _log.log(LEVEL_SENTINEL, _END_OF_LOG)
 
 
 # a function to remove the log file which the controller can call if it wants to
 def remove():
-    os.remove(ffn_log_file)
-    if len(os.listdir(_log_directory))==0:
-        print("rmdir  {0!r}".format(_log_directory))
-        os.rmdir(_log_directory)
+    os.remove(logfile.get_name())
+    log_directory = logfile.get_directory()
+    if len(os.listdir(log_directory))==0:
+        print("rmdir  {0!r}".format(log_directory))
+        os.rmdir(log_directory)
