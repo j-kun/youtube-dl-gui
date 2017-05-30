@@ -210,7 +210,6 @@ class WindowMain(tk.Tk):
                         )
                     )
             m.add_named_command("reset_settings", label=_("reset settings..."), command=lambda: WindowResetSettings(root))
-            m.add_named_checkbutton("auto_remove_log", label=_("auto remove log"), command=lambda value: settings.__setitem__(KEY.AUTO_REMOVE_LOG_AT_CLOSE,value))
             m.add_named_checkbutton("update_settings", label=_("auto save settings"), command=cmd_update_settings)
             
             
@@ -224,6 +223,8 @@ class WindowMain(tk.Tk):
             m.add_named_command("save_metainfo", label=_("save metainfo"), command=lambda: root.save_metainfo(raw=False), state=tkc.STATE_DISABLED)
             m.add_named_command("save_raw_metainfo", label=_("save raw metainfo"), command=lambda: root.save_metainfo(raw=True))
             m.add_separator()
+            m.add_named_checkbutton("enable_log_file", label=_("write log file"), command=logging_setup.set_enable_logfile, value=logging_setup.is_logfile_enabled)
+            m.add_named_checkbutton("auto_remove_log", label=_("auto remove log"), command=lambda value: settings.__setitem__(KEY.AUTO_REMOVE_LOG_AT_CLOSE,value))
             m.add_named_command("open_log_settings", label=_("open log file settings"), command=lambda: open_directory.open_file(metainfo.get_config_ffn(logging_setup.FN_LOGGING_JSON, create=True)))
             m.add_named_command("open_log", label=_("open log file"), command=lambda: open_directory.open_file(logging_setup.ffn_log_file))
             m.add_named_command("save_log_as", label=_("save log as ..."), command=root.save_log_as)
@@ -439,7 +440,7 @@ class WindowMain(tk.Tk):
 
             menus = self.root.menus
             menus.menu_frontend.set_named_checkbutton('update_settings', value=settings.setdefault(settings_manager.KEY.UPDATE_SETTINGS, False))
-            menus.menu_frontend.set_named_checkbutton('auto_remove_log', value=settings.setdefault(KEY.AUTO_REMOVE_LOG_AT_CLOSE, True))
+            menus.menu_debug.set_named_checkbutton('auto_remove_log', value=settings.setdefault(KEY.AUTO_REMOVE_LOG_AT_CLOSE, True))
 
             # ----- tab: single video -----
             self.entry_source.configure(width=WIDTH_SOURCE)
