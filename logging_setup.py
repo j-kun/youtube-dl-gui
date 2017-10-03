@@ -200,7 +200,9 @@ class LogFile(object):
             _log.log(LEVEL_SENTINEL, self.END_LINE)
 
 
-    def remove():
+    def remove(self):
+        if not self._is_enabled:
+            return
         os.remove(self.get_name())
         log_directory = self.get_directory()
         if len(os.listdir(log_directory))==0:
