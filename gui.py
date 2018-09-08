@@ -1042,7 +1042,10 @@ class WindowMain(tk.Tk):
 
     def save_metainfo(self, raw):
         if self.meta_info!=None:
-            fn = self.meta_info['title']
+            fn = ""
+            for c in self.meta_info['title']:
+                if c.isalnum() or c in "-_ +":
+                    fn += c
         else:
             fn = "none"
         if raw:
