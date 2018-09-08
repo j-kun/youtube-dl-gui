@@ -1056,7 +1056,7 @@ class WindowMain(tk.Tk):
             defaultextension='.json',
             filetypes=(
                 (_("json files"), "*.json"),
-                (_("text files"), "*.txt")
+                (_("text files"), "*.txt"),
                 (_("all files"), ".*"),
             ),
         )
