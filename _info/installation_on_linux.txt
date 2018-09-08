@@ -16,7 +16,7 @@ http://rg3.github.io/youtube-dl/download.html
 
 
 move the folder youtube-dl-gui to whereever you want to have it and do the following.
-(in the following examples I am it's located in /opt).
+(in the following examples I am assuming it's located in /opt).
 
 create an alias to call from the command line:
 add the following line to ~/.bashrc:
