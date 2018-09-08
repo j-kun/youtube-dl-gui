@@ -58,6 +58,8 @@ and add libav\usr\bin to PATH variable
 # ===== ideas for improvement =====
 #TODO: focus
 #TODO: no permission to remove log on Windows (cause it's open?)
+#      => disable log file by default
+#TODO: what if logfile is disabled?
 #TODO: tkx.SelectableLabel too small for kana
 
 #TODO? filename (not really necessary, just click open and hit F2)
