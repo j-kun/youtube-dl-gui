@@ -104,6 +104,9 @@ class KEY:
     WIDTH_VIDEO_FORMAT = 'width-video-format'
     WIDTH_SUBTITLE_LANGUAGES = 'width-subtitle-languages'
 
+    # internal
+    CHECK_BACKEND = 'check-backend'
+
 
 #TODO: move to other file. adapter?
 def get_default_destination_directory(settings):
@@ -808,6 +811,21 @@ class WindowMain(tk.Tk):
             self.text_log.delete(1.0, tk.END)
             self.pack_buttons_before_download()
             self.root.reset()
+
+
+    class FrameNotInstalled(tk.Frame):
+
+        def __init__(self, master, **kw):
+            tk.Frame.__init__(self, master, **kw)
+
+            self.label = tk.Label(self)
+            self.label.pack()
+
+        def update_labels(self):
+            tkx.set_text(self.label, _("Failed to find the application youtube-dl. This program is merely a GUI and can not be used without it."))
+            #TODO: provide download link
+            #TODO: provide possibility to enter install path
+
             
 
     def __init__(self, adapter):
@@ -818,7 +836,17 @@ class WindowMain(tk.Tk):
         self.window_cli_version = None
         self.adapter = adapter
         self.frames = []
-        
+
+        if settings.setdefault(KEY.CHECK_BACKEND, True):
+            self.check_backend()
+        else:
+            self.start()
+
+
+    def start(self):
+        # increases startup time significantly.
+        # please note that this only takes effect if update-settings is True.
+        settings[KEY.CHECK_BACKEND] = False
         self.frame_main = self.FrameMain(self)
         self.frames.append(self.frame_main)
         self.meta_info_display = self.frame_main.frame_info
@@ -844,6 +872,17 @@ class WindowMain(tk.Tk):
         if settings.setdefault(KEY.AUTO_PASTE_ON_STARTUP, True):
             self.frame_main.source_clear_and_paste(precheck=True)
 
+    def check_backend(self):
+        if self.adapter.is_installed():
+            self.start()
+            return
+
+        self.frame_not_installed = self.FrameNotInstalled(self)
+        self.frame_not_installed.pack(expand=True, fill=tk.BOTH)
+        self.frames.append(self.frame_not_installed)
+
+        self.update_labels(menus=False)
+
     def update_settings(self):
         log.debug("update_settings()")
         self.menus.set_cascade_visibility(self.menus.menu_debug, settings.setdefault(KEY.SHOW_DEBUG_MENU, False))
@@ -866,10 +905,11 @@ class WindowMain(tk.Tk):
     def reset(self):
         self.download_dest = None
 
-    def update_labels(self):
+    def update_labels(self, menus=True):
         log.debug("update_labels()")
         self.title(_("youtube-dl"))
-        self.menus = self.ApplicationMenus(self)
+        if menus:
+            self.menus = self.ApplicationMenus(self)
         
         for f in self.frames:
             f.update_labels()

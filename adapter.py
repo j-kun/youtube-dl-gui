@@ -147,6 +147,13 @@ class Adapter(object):
         self.add_info = True
         self._proc = None
 
+    def is_installed(self):
+        self.set_command_print_version()
+        try:
+            return subprocess.call(self.cmd) == 0
+        except FileNotFoundError:
+            return False
+
     def start(self):
         self._queue = queue.Queue()
         cmd = self.cmd #self.process_params(params)
