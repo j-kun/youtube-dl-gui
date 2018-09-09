@@ -1276,7 +1276,7 @@ class WindowMain(tk.Tk):
 
 class WindowCLIHelp(tk.Tk):
 
-    POLL_INTERVAL_IN_MS = 1000/50
+    POLL_INTERVAL_IN_MS = 1000//50
     
     def __init__(self, adapter):
         tk.Tk.__init__(self)

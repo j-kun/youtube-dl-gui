@@ -23,6 +23,7 @@ TEST = False
 
 class KEY:
     CMD = 'cmd'
+    ENCODING = 'encoding'
 
 class ProgramFinder(object):
 
@@ -169,7 +170,7 @@ class Adapter(object):
         )
         
         def read_stream(queue, flag, stream):
-            for ln in iter(lambda: self._read_line(stream), b''):
+            for ln in iter(lambda: self._read_line(stream), ''):
                 queue.put((ln, flag))
         self._thread_stdout = threading.Thread(target=read_stream, args=[self._queue, self.STDOUT, self._proc.stdout])
         self._thread_stdout.daemon = True
@@ -184,15 +185,17 @@ class Adapter(object):
         #TODO: relies on assumption that linesep is one character only
         #but I can't check whether there is another character to be interpreted
         #relies on assumption that '\r' is sent after update. is that true?
-        seps = ("\n", "\r")
-        line = ""
+        seps = (b"\n", b"\r")
+        line = bytearray()
         while line[-1:] not in seps:
             c = stream.read(1)
             if len(c)==0:
                 return ""
             #sys.stdout.write(c)
             #sys.stdout.flush()
-            line += c
+            line.extend(c)
+
+        line = line.decode(settings.setdefault(KEY.ENCODING, 'utf-8'))
         return line
 
     def kill(self):
