@@ -190,7 +190,7 @@ class Adapter(object):
         while line[-1:] not in seps:
             c = stream.read(1)
             if len(c)==0:
-                return ""
+                break
             #sys.stdout.write(c)
             #sys.stdout.flush()
             line.extend(c)
