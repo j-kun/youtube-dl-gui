@@ -544,6 +544,52 @@ class LabelSelectableWithLabel(LabelSelectable):
 
     def __str__(self):
         return str(self.frame)
+
+
+class TextReadonly(tk.Text):
+
+    def __init__(self, master, **kw):
+        text = kw.pop('text', None)
+
+        try:
+            bg = master.cget('bg')
+        except tk.TclError:
+            s = master['style']
+            bg = ttk.Style().lookup(s, 'background')
+        kw.setdefault('bg', bg)
+        kw.setdefault('insertbackground', bg)
+        kw.setdefault('relief', tk.FLAT)
+        kw.setdefault('highlightthickness', 0)
+
+        tk.Text.__init__(self, master, **kw)
+        self.bind("<Key>", lambda event: _key_event_disabled(self, event))
+
+        if text!=None:
+            set_text(self, text)
+
+class ScrolledTextReadonly(ScrolledText):
+
+    """ScrolledText has a readonly=True option.
+    In contrast to that, this class also changes the visual appearance."""
+
+    def __init__(self, master, **kw):
+        text = kw.pop('text', None)
+
+        try:
+            bg = master.cget('bg')
+        except tk.TclError:
+            s = master['style']
+            bg = ttk.Style().lookup(s, 'background')
+        kw.setdefault('bg', bg)
+        kw.setdefault('insertbackground', bg)
+        kw.setdefault('relief', tk.FLAT)
+        kw.setdefault('highlightthickness', 0)
+
+        ScrolledText.__init__(self, master, **kw)
+        self.bind("<Key>", lambda event: _key_event_disabled(self, event))
+
+        if text!=None:
+            set_text(self, text)
         
         
 
