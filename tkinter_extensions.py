@@ -452,6 +452,9 @@ class Entry(tk.Entry, WidgetWithContextMenu):
         except tk.TclError:
             return False
 
+    def bind_to_write(self, func):
+        self.var.trace('w', lambda name,index,mode: func())
+
 #http://stackoverflow.com/questions/1602106/in-pythons-tkinter-how-can-i-make-a-label-such-that-you-can-select-the-text-wi
 #TODO: try ttk.Label(takefocus=true)
 class LabelSelectable(Entry):

@@ -817,14 +817,77 @@ class WindowMain(tk.Tk):
 
         def __init__(self, master, **kw):
             tk.Frame.__init__(self, master, **kw)
+            self.root = master
 
-            self.label = tk.Label(self)
-            self.label.pack()
+            self.label = tkx.ScrolledTextReadonly(self, height=0, wrap=tk.WORD)
+            self.label.pack(expand=True, fill=tk.BOTH)
+
+            frame = tk.Frame(self)
+            frame.pack(expand=False, fill=tk.X)
+            self.entry_path = tkx.Entry(frame)
+            self.entry_path.pack(expand=True, fill=tk.X, side=tk.LEFT)
+            self.entry_path.default_bg = self.entry_path['bg']
+            self.button_browse = tkx.Button(frame, imagepath=Icon.BROWSE, command=self.browse_path)
+            self.button_browse.pack(side=tk.RIGHT)
+
+            frame = tkx.ButtonsFrame(self,
+                ok = dict(command=self.retry, default=tk.ACTIVE),
+                cancel = dict(command=self.root.close),
+            )
+            frame.pack(side=tk.BOTTOM)
+            self.button_retry = frame.button_ok
+            self.button_close = frame.button_cancel
 
         def update_labels(self):
-            tkx.set_text(self.label, _("Failed to find the application youtube-dl. This program is merely a GUI and can not be used without it."))
-            #TODO: provide download link
-            #TODO: provide possibility to enter install path
+            text = _("""
+Failed to find the application youtube-dl. This program is merely a GUI and can not be used without it.
+
+Although youtube-dl is available via apt I discourage installing it that way because it's crucial that youtube-dl is up to date, otherwise it may not work. After the following manual installation, updates can be performed via this GUI by opening the "youtube-dl" menu and clicking on the "update" button.
+
+(1) Download youtube-dl from:
+http://rg3.github.io/youtube-dl/download.html
+
+(2) Move the file to a directory where you have write permissions (important for updates).
+
+(3) Make the file executable.
+
+(4) Enter it's path into the entry box below and click on Retry.
+""").strip("\n")
+            tkx.set_text(self.label, text)
+            self.button_retry.config(text=_("Retry"))
+            self.button_close.config(text=_("Close"))
+
+        def browse_path(self, event=None):
+            path = tkx.get_text(self.entry_path)
+            if path == "":
+                diropt = "/opt"
+                if os.path.isdir(diropt):
+                    path = diropt
+            elif os.path.isfile(path):
+                path = os.path.split(path)[0]
+
+            # https://pypi.org/project/tkfilebrowser/
+            path = tkFileDialog.askopenfilename(
+                title = _("Choose youtube-dl executable"),
+                initialdir = path,
+                initialfile = 'youtube-dl',
+            )
+            if path == "":
+                return
+
+            tkx.set_text(self.entry_path, path)
+
+        def retry(self):
+            path = tkx.get_text(self.entry_path)
+            self.root.adapter.set_path(path)
+
+            if self.root.adapter.is_installed():
+                self.root.frames.remove(self)
+                self.destroy()
+                self.root.start()
+            else:
+                self.entry_path.config(bg='red')
+                self.entry_path.bind_to_write(lambda: self.entry_path.config(bg=self.entry_path.default_bg))
 
             
 

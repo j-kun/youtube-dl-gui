@@ -70,6 +70,12 @@ class ProgramFinder(object):
             if os.path.isfile(trypath):
                 return trypath
 
+    def set_path(self, path):
+        if os.path.isdir(path):
+            path = os.path.join(path, 'youtube-dl')
+        self.cmd = [path]
+        settings[KEY.CMD] = self.cmd
+
     def get_cmd(self):
         return list(self.cmd)
     
@@ -147,6 +153,9 @@ class Adapter(object):
         self.program_finder = ProgramFinder()
         self.add_info = True
         self._proc = None
+
+    def set_path(self, path):
+        self.program_finder.set_path(path)
 
     def is_installed(self):
         self.set_command_print_version()
