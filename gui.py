@@ -830,11 +830,14 @@ class WindowMain(tk.Tk):
             self.button_browse = tkx.Button(frame, imagepath=Icon.BROWSE, command=self.browse_path)
             self.button_browse.pack(side=tk.RIGHT)
 
+            self.label_error = tkx.LabelSelectable(self, fg='red')
+
             frame = tkx.ButtonsFrame(self,
                 ok = dict(command=self.retry, default=tk.ACTIVE),
                 cancel = dict(command=self.root.close),
             )
             frame.pack(side=tk.BOTTOM)
+            self.frame_buttons = frame
             self.button_retry = frame.button_ok
             self.button_close = frame.button_cancel
 
@@ -881,13 +884,22 @@ http://rg3.github.io/youtube-dl/download.html
             path = tkx.get_text(self.entry_path)
             self.root.adapter.set_path(path)
 
-            if self.root.adapter.is_installed():
+            ret = self.root.adapter.check_installed()
+            if ret == adapter.Adapter.RET_INSTALLED:
                 self.root.frames.remove(self)
                 self.destroy()
                 self.root.start()
             else:
                 self.entry_path.config(bg='red')
                 self.entry_path.bind_to_write(lambda: self.entry_path.config(bg=self.entry_path.default_bg))
+                if ret == adapter.Adapter.RET_PERMISSION_DENIED:
+                    tkx.set_text(self.label_error, _("permission denied"))
+                elif ret == adapter.Adapter.RET_FILE_NOT_FOUND:
+                    tkx.set_text(self.label_error, _("file not found"))
+                else:
+                    log.error("unknown return code for check_installed: %s" % ret)
+                    tkx.set_text(self.label_error, ret)
+                self.label_error.pack(anchor=tk.W, before=self.frame_buttons)
 
             
 
@@ -936,7 +948,7 @@ http://rg3.github.io/youtube-dl/download.html
             self.frame_main.source_clear_and_paste(precheck=True)
 
     def check_backend(self):
-        if self.adapter.is_installed():
+        if self.adapter.check_installed() == adapter.Adapter.RET_INSTALLED:
             self.start()
             return
 

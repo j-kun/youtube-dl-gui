@@ -145,6 +145,10 @@ class Adapter(object):
     STDOUT = 1
     STDERR = 2
 
+    RET_INSTALLED = "installed"
+    RET_FILE_NOT_FOUND = "file not found"
+    RET_PERMISSION_DENIED = "permission denied"
+
     @classmethod
     def create_new_instance(cls):
         return cls()
@@ -157,12 +161,15 @@ class Adapter(object):
     def set_path(self, path):
         self.program_finder.set_path(path)
 
-    def is_installed(self):
+    def check_installed(self):
         self.set_command_print_version()
         try:
-            return subprocess.call(self.cmd) == 0
+            subprocess.call(self.cmd)
+            return self.RET_INSTALLED
         except FileNotFoundError:
-            return False
+            return self.RET_FILE_NOT_FOUND
+        except PermissionError:
+            return self.RET_PERMISSION_DENIED
 
     def start(self):
         self._queue = queue.Queue()
