@@ -816,6 +816,7 @@ class WindowMain(tk.Tk):
     class FrameNotInstalled(tk.Frame):
 
         def __init__(self, master, **kw):
+            self.check_installed_ret = kw.pop('check_installed_ret')
             tk.Frame.__init__(self, master, **kw)
             self.root = master
 
@@ -827,10 +828,12 @@ class WindowMain(tk.Tk):
             self.entry_path = tkx.Entry(frame)
             self.entry_path.pack(expand=True, fill=tk.X, side=tk.LEFT)
             self.entry_path.default_bg = self.entry_path['bg']
+            tkx.set_text(self.entry_path, self.root.adapter._get_default_cmd()[0])
             self.button_browse = tkx.Button(frame, imagepath=Icon.BROWSE, command=self.browse_path)
             self.button_browse.pack(side=tk.RIGHT)
 
             self.label_error = tkx.LabelSelectable(self, fg='red')
+            self.label_error.pack(anchor=tk.W)
 
             frame = tkx.ButtonsFrame(self,
                 ok = dict(command=self.retry, default=tk.ACTIVE),
@@ -860,20 +863,38 @@ http://rg3.github.io/youtube-dl/download.html
             self.button_retry.config(text=_("Retry"))
             self.button_close.config(text=_("Close"))
 
+            self.update_error_label()
+
+        def update_error_label(self):
+            ret = self.check_installed_ret
+            if ret == adapter.Adapter.RET_PERMISSION_DENIED:
+                tkx.set_text(self.label_error, _("permission denied"))
+            elif ret == adapter.Adapter.RET_FILE_NOT_FOUND:
+                tkx.set_text(self.label_error, _("file not found"))
+                self.entry_path.config(bg='red')
+                self.entry_path.bind_to_write(lambda: self.entry_path.config(bg=self.entry_path.default_bg))
+            else:
+                log.error("unknown return code for check_installed: %s" % ret)
+                tkx.set_text(self.label_error, ret)
+
+
         def browse_path(self, event=None):
             path = tkx.get_text(self.entry_path)
+            fn = 'youtube-dl'
+
+            if not os.path.isdir(path):
+                path,fn = os.path.split(path)
+
             if path == "":
                 diropt = "/opt"
                 if os.path.isdir(diropt):
                     path = diropt
-            elif os.path.isfile(path):
-                path = os.path.split(path)[0]
 
             # https://pypi.org/project/tkfilebrowser/
             path = tkFileDialog.askopenfilename(
                 title = _("Choose youtube-dl executable"),
                 initialdir = path,
-                initialfile = 'youtube-dl',
+                initialfile = fn,
             )
             if path == "":
                 return
@@ -890,16 +911,8 @@ http://rg3.github.io/youtube-dl/download.html
                 self.destroy()
                 self.root.start()
             else:
-                self.entry_path.config(bg='red')
-                self.entry_path.bind_to_write(lambda: self.entry_path.config(bg=self.entry_path.default_bg))
-                if ret == adapter.Adapter.RET_PERMISSION_DENIED:
-                    tkx.set_text(self.label_error, _("permission denied"))
-                elif ret == adapter.Adapter.RET_FILE_NOT_FOUND:
-                    tkx.set_text(self.label_error, _("file not found"))
-                else:
-                    log.error("unknown return code for check_installed: %s" % ret)
-                    tkx.set_text(self.label_error, ret)
-                self.label_error.pack(anchor=tk.W, before=self.frame_buttons)
+                self.check_installed_ret = ret
+                self.update_error_label()
 
             
 
@@ -948,11 +961,12 @@ http://rg3.github.io/youtube-dl/download.html
             self.frame_main.source_clear_and_paste(precheck=True)
 
     def check_backend(self):
-        if self.adapter.check_installed() == adapter.Adapter.RET_INSTALLED:
+        ret = self.adapter.check_installed()
+        if ret == adapter.Adapter.RET_INSTALLED:
             self.start()
             return
 
-        self.frame_not_installed = self.FrameNotInstalled(self)
+        self.frame_not_installed = self.FrameNotInstalled(self, check_installed_ret=ret)
         self.frame_not_installed.pack(expand=True, fill=tk.BOTH)
         self.frames.append(self.frame_not_installed)
 
