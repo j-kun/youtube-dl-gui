@@ -908,6 +908,7 @@ http://rg3.github.io/youtube-dl/download.html
                 self.root.frames.remove(self)
                 self.destroy()
                 self.root.start()
+                self.root.save_settings(force=True)
             else:
                 self.check_installed_ret = ret
                 self.update_error_label()
