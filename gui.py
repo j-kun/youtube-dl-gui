@@ -845,7 +845,18 @@ class WindowMain(tk.Tk):
             self.button_close = frame.button_cancel
 
         def update_labels(self):
-            text = _("""
+            if self.check_installed_ret == adapter.Adapter.RET_PERMISSION_DENIED:
+                text = _("""
+I don't have the permission to execute the application youtube-dl. This program is merely a GUI and can not be used without it.
+
+Please make the file executable. (The command in question is displayed in the entry box below.)
+While you are at it, please make sure it is writable as well (important for updates).
+
+For further information see the webpage:
+http://rg3.github.io/youtube-dl/download.html
+""").strip("\n")
+            else:
+                text = _("""
 Failed to find the application youtube-dl. This program is merely a GUI and can not be used without it.
 
 Although youtube-dl is available via apt I discourage installing it that way because it's crucial that youtube-dl is up to date, otherwise it may not work. After the following manual installation, updates can be performed via this GUI by opening the "youtube-dl" menu and clicking on the "update" button.
