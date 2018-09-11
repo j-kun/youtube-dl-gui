@@ -752,7 +752,7 @@ class WindowMain(tk.Tk):
             root = self
             frame = root
 
-            self.text_log = tkx.AutoScrolledText(frame, wrap=tk.WORD, readonly=True)
+            self.text_log = tkx.AutoScrolledText(frame, wrap=tk.WORD, readonly=True, height=5)
             self.text_log.pack(expand=True, fill=tk.BOTH)
             self.text_log.tag_configure(self.TAG_WARNING, background='#ffff64')
             self.text_log.tag_configure(self.TAG_ERROR, background='#ff9f9f')
