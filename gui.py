@@ -850,14 +850,12 @@ Failed to find the application youtube-dl. This program is merely a GUI and can 
 
 Although youtube-dl is available via apt I discourage installing it that way because it's crucial that youtube-dl is up to date, otherwise it may not work. After the following manual installation, updates can be performed via this GUI by opening the "youtube-dl" menu and clicking on the "update" button.
 
-(1) Download youtube-dl from:
+(1) Download youtube-dl from the following url and move it whereever you want to store it.
 http://rg3.github.io/youtube-dl/download.html
 
-(2) Move the file to a directory where you have write permissions (important for updates).
+(2) Make the file write- and executable for the user. (Write permissions are important for updates.)
 
-(3) Make the file executable.
-
-(4) Enter it's path into the entry box below and click on Retry.
+(3) Enter it's path into the entry box below and click on Retry.
 """).strip("\n")
             tkx.set_text(self.label, text)
             self.button_retry.config(text=_("Retry"))
