@@ -963,6 +963,7 @@ http://rg3.github.io/youtube-dl/download.html
         ret = self.adapter.check_installed()
         if ret == adapter.Adapter.RET_INSTALLED:
             self.start()
+            self.save_settings(force=True)
             return
 
         self.frame_not_installed = self.FrameNotInstalled(self, check_installed_ret=ret)
