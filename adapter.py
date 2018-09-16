@@ -53,7 +53,7 @@ class ProgramFinder(object):
 
     def _on_mac(self):
         return ['youtube-dl']
-        raise NotImplemented
+        raise NotImplementedError()
 
     def get_youtubedl_path(self):
         searched_folder_name = os.path.join("youtube-dl", "youtube_dl", "__main__.py")
@@ -313,7 +313,7 @@ class Adapter(object):
         return cmd
 
     def _process_params_playlist(self, params):
-        raise NotImplemented
+        raise NotImplementedError()
 
     def _get_default_cmd(self):
         return self.program_finder.get_cmd()

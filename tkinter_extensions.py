@@ -42,7 +42,7 @@ def set_text(widget, text):
         widget[tkc.TEXT] = text
     else:
         log.error("set_text is not implemented for {0}".format(type(widget)))
-        raise NotImplemented
+        raise NotImplementedError()
 
 def get_text(widget):
     if isinstance(widget, tk.Entry):
@@ -52,7 +52,7 @@ def get_text(widget):
     elif isinstance(widget, tk.StringVar):
         return widget.get()
     else:
-        raise NotImplemented
+        raise NotImplementedError()
 
 
 def add_tooltip(widget):
@@ -154,7 +154,7 @@ class WidgetWithContextMenu(object):
             self.contextmenu.add_named_command(name, label=lbl, command=lambda: cmd(self))
         else:
             #TODO
-            raise NotImplemented("sub menus are not yet implemented")
+            raise NotImplementedError("sub menus are not yet implemented")
         #else:
         #    lbl, cmd = menuitem
         #    self.contextmenu.add_command(label=lbl, command=cmd)
