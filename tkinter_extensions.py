@@ -1144,7 +1144,7 @@ class CursorManager(object):
 
 if __name__=='__main__':
     import sys
-    logging.basicConfig(level=0, format="[%(levelname)-8s] %(message)s", stream=sys.stdout, disable_existing_loggers=True)
+    logging.basicConfig(level=0, format="[%(levelname)-8s] %(message)s", stream=sys.stdout)
     import time
     #_ = lambda x: x
     toggle_readonly = True
