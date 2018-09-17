@@ -4,6 +4,8 @@ try:
 except ImportError:
     import tkinter as tk
 
+import which_os_am_i_on
+
 TEXT = 'text'
 TEXTVARIABLE = 'textvariable'
 STATE = 'state'
@@ -31,7 +33,12 @@ WNSE = W+N+S+E
 #   http://infohost.nmt.edu/tcc/help/pubs/tkinter/web/key-names.html
 #.state (modifier masks):
 #   http://infohost.nmt.edu/tcc/help/pubs/tkinter/web/event-handlers.html
+#   does not seem reliable: https://stackoverflow.com/a/19863837
 MOD_CTRL = 0x0004 # keyevent.state: modifier control
+if which_os_am_i_on.windows():
+    MOD_ALT   = 0x20000
+else:
+    MOD_ALT   = 0x0008
 
 KEYCODE_ARROW_UP    = 111
 KEYCODE_ARROW_DOWN  = 116

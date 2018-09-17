@@ -394,6 +394,8 @@ def _key_event_disabled(self, event):
     if event.keysym.lower()=='c' and event.state&tkc.MOD_CTRL:
         #log.debug("ctrl-c pass through")
         return None 
+    if event.state == tkc.MOD_ALT:
+        return None
     if event.keycode in tkc.KEYCODES_MOVE_CURSOR:
         return None
     if event.keycode == tkc.KEYCODE_TAB:
