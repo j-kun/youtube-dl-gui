@@ -408,7 +408,7 @@ class Entry(tk.Entry, WidgetWithContextMenu):
         tk.Entry.__init__(self, master, **kw)
         self.set_contextmenu_from_keywordargs()
         if text:
-            self.set_value(self, text, force=True)
+            self.set_value(text, force=True)
 
     def get_value(self):
         return get_text(self)
