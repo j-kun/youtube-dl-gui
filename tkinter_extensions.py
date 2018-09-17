@@ -1193,6 +1193,8 @@ if __name__=='__main__':
 
     def ask_to_close():
         t = tk.Toplevel()
+        t.attributes('-type', 'dialog')
+        t.title("Quit?")
         LabelSelectable(t, text="Are you sure you want to quit?").pack()
         ButtonsFrame(t,
             yes = dict(text="Yes", command=lambda: only(t.destroy(), r.destroy(), r.quit())),
