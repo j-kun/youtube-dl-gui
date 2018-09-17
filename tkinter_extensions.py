@@ -1170,6 +1170,12 @@ if __name__=='__main__':
     AutoScrolledText.default_on_readonly_enabled = lambda self: self.contextmenu.entry_disable('paste')
     AutoScrolledText.default_on_readonly_disabled = lambda self: self.contextmenu.set_entry_enabled('paste', self.can_paste())
 
+    Entry.default_contextmenu = (
+        ('copy', 'copy', Entry.text_copy_selection),
+        ('paste', 'paste', Entry.text_paste)
+    )
+    Entry.default_on_contextmenu_open = on_contextmenu_open
+
     LabelSelectable.default_contextmenu = (
         ('copy', 'copy', LabelSelectable.text_copy_selection),
     )
@@ -1212,6 +1218,10 @@ if __name__=='__main__':
     details = DetailsFrame(r, label='Details', label_expand='Expand Details', label_collapse='Collapse Details')
     details.pack(expand=True, fill=tk.X)
     LabelSelectable(details, text="This is just a test. Nothing more.").pack(side=tk.LEFT)
+
+    entry = Entry(r, text="hello world")
+    entry.pack(fill=tk.BOTH)
+
     buttons_frame = ButtonsFrame(r,
         ok = dict(text="Start", command=m.fill),
         cancel = dict(text="Close", command=ask_to_close)
