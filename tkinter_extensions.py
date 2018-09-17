@@ -447,6 +447,8 @@ class Entry(tk.Entry, WidgetWithContextMenu):
 
     def can_paste(self):
         '''True if clipboard is not empty'''
+        if self[tkc.STATE] in tkc.STATES_READONLY:
+            return False
         try:
             return self.clipboard_get()!=''
         except tk.TclError:

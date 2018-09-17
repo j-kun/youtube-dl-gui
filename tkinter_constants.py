@@ -12,9 +12,11 @@ STATE_NORMAL = tk.NORMAL
 STATE_ACTIVE = tk.ACTIVE
 STATE_DISABLED = tk.DISABLED
 STATE_READONLY = 'readonly'
-# seems to work for Entry but not for Text
+# readonly seems to work for Entry but not for Text
 # as work around use something like
 # text.bind("<Key>", lambda event: "break")
+STATES_WRITABLE = (STATE_NORMAL, STATE_ACTIVE)
+STATES_READONLY = (STATE_DISABLED, STATE_READONLY)
 
 COLOR_FOREGROUND = 'foreground'
 COLOR_BACKGROUND = 'background'
