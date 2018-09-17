@@ -1221,6 +1221,11 @@ if __name__=='__main__':
 
     entry = Entry(r, text="hello world")
     entry.pack(fill=tk.BOTH)
+    entry.contextmenu.add_named_checkbutton("writable",
+        label = "writable",
+        value = True,
+        command = lambda is_writable: entry.config(state=tkc.STATE_NORMAL) if is_writable else entry.config(state=tkc.STATE_READONLY),
+    )
 
     buttons_frame = ButtonsFrame(r,
         ok = dict(text="Start", command=m.fill),
