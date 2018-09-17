@@ -10,7 +10,7 @@ except:
     n = 0
 n += 1
 
-for i in xrange(n, n+9):
+for i in range(n, n+9):
     time.sleep(1)
     f = open(fn, "w")
     f.write(str(i))

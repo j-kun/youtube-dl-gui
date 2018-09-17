@@ -1149,7 +1149,7 @@ if __name__=='__main__':
                 self.i += 1
                 if self.i<25:
                     continue
-                for i in xrange(10):
+                for i in range(10):
                     t.update()
                     time.sleep(0.1)
 

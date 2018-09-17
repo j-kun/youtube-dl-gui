@@ -364,7 +364,10 @@ class Adapter(object):
         
 
 if __name__=='__main__':
-    import Tkinter as tk
+    try:
+        import Tkinter as tk
+    except:
+        import tkinter as tk
     class GUI(tk.Tk):
         
         TAG_ERROR = 'error'
