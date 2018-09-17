@@ -93,7 +93,7 @@ def add_value_if_given(cmd, params, key):
 if sys.version_info.major<=2:
     # not tested with unicode
     def split_options(string):
-        if isinstance(string, unicode):
+        if isinstance(string, unicode): # pylint: disable=undefined-variable
             #http://stackoverflow.com/a/11194593
             return [opt.decode('utf-8') for opt in shlex.split(string.encode('utf-8'))]
         elif isinstance(string, str):

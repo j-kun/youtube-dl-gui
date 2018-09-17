@@ -22,7 +22,7 @@ if os_is.windows():
         cmd.append(path)
         return _run_cmd(cmd)
     def open_file(path):
-        os.startfile(path)
+        os.startfile(path) # pylint: disable=no-member
 elif os_is.linux():
     def open_directory(path, select):
         '''select=True: parent directory is opened, path (file or directory) is selected.

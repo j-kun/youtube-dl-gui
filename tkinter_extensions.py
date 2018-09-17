@@ -171,7 +171,14 @@ class WidgetWithContextMenu(object):
 
     def remove_on_contextmenu_open_listener(self, listener):
         self._on_contextmenu_open_listeners.remove(listener)
+
+
+    def bind(self, sequence, func, add=None):
+        raise NotImplementedError()
         
+    def unbind(self, sequence, funcid=None):
+        raise NotImplementedError()
+
 
 # ========== sub classes ==========
 
@@ -310,7 +317,7 @@ class ScrolledText(tkText.ScrolledText, WidgetWithContextMenu):
 
     def readonly(self, readonly=None):
         if readonly==None:
-            return self._readonly
+            return self._readonly # pylint: disable=access-member-before-definition
         else:
             self._readonly = readonly
             if readonly:
