@@ -1201,7 +1201,7 @@ if __name__=='__main__':
     r.config(menu=menu)
     l = LabelSelectableWithLabel(r,
         text="bla bla bla",
-        imagepath="symbole/resized/count.png"
+        imagepath="symbols/count1.xbm"
     )# textvariable=tk.StringVar(value="some test app:"))
     l.pack(side=tk.TOP, fill=tk.X)
     t = AutoScrolledText(r,
