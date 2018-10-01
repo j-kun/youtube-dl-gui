@@ -1357,7 +1357,18 @@ http://rg3.github.io/youtube-dl/download.html
         self.save_settings()
         logging_setup.logfile.append_end_line() # atexit is not called if executed from IDLE
         if settings.setdefault(KEY.AUTO_REMOVE_LOG_AT_CLOSE, True):
-            logging_setup.logfile.remove()
+            try:
+                logging_setup.logfile.remove()
+            except PermissionError as e:
+                tkMessageBox.showwarning(
+                    title = _("Failed to remove log file"),
+                    message = _("The following exception occured while trying to remove the log file:\n{error_message}\n\nPlease remove the log file manually.\n{log_file_path}\n\nIf you don't care about the log file you can set the setting {key_remove_log} to False.").
+                        format(
+                            error_message = e,
+                            log_file_path = logging_setup.logfile.get_name(),
+                            key_remove_log = KEY.AUTO_REMOVE_LOG_AT_CLOSE,
+                        ),
+                )
         self.destroy()
         self.quit()
         
