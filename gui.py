@@ -1356,7 +1356,7 @@ http://rg3.github.io/youtube-dl/download.html
         
         self.save_settings()
         logging_setup.logfile.append_end_line() # atexit is not called if executed from IDLE
-        if settings[KEY.AUTO_REMOVE_LOG_AT_CLOSE]:
+        if settings.setdefault(KEY.AUTO_REMOVE_LOG_AT_CLOSE, True):
             logging_setup.logfile.remove()
         self.destroy()
         self.quit()
